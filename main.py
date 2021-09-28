@@ -36,20 +36,15 @@ def filter_albums(albums):
             )
         except ValueError:
             print("you should enter a number!!!!")
-        if start and end:
-            albums = list(
-                filter(lambda date: release_filter(date[3], start, end), albums)
-            )
-        if start and not end:
+            
+        if start:
             albums = list(
                 filter(
                     lambda date: release_filter(date[3], start, float("inf")), albums
                 )
             )
-        if end and not start:
+        if end:
             albums = list(filter(lambda date: release_filter(date[3], 0, end), albums))
-        else:
-            pass
 
         artist = input(
             "enter the name of the artist you want to filter by(enter nothing for none): "
