@@ -17,15 +17,67 @@ except sqlite3.OperationalError:
     pass
 
 
-def show_albums(albums):
-    for i in range(len(albums)):
-        if albums[i][4]:
-            listend = "listend"
+def filter_albums(albums):
+    def release_filter(release, start, end):
+        if start <= release <= end:
+            return True
+
+    while True:
+        try:
+            start = int(
+                input(
+                    "enter the start of the year you want to filter by(enter nothing for none): "
+                )
+            )
+            end = int(
+                input(
+                    "enter the end of the year you want to filter by(enter nothing for none): "
+                )
+            )
+        except ValueError:
+            print("you should enter a number!!!!")
+        if start and end:
+            albums = list(
+                filter(lambda date: release_filter(date[3], start, end), albums)
+            )
+        if start and not end:
+            albums = list(
+                filter(
+                    lambda date: release_filter(date[3], start, float("inf")), albums
+                )
+            )
+        if end and not start:
+            albums = list(filter(lambda date: release_filter(date[3], 0, end), albums))
         else:
-            listend = "not listend yet"
-        print(
-            f"no: {i}, title: {albums[i][0]}, artist: {albums[i][1]}, genre: {albums[i][2]}, release: {albums[i][3]}, {listend}"
+            pass
+
+        artist = input(
+            "enter the name of the artist you want to filter by(enter nothing for none): "
         )
+        if artist:
+            albums = list(filter(lambda item: item[1] == artist), albums)
+
+        genre = input(
+            "enter the name of the genre you want to filter by(enter nothing for none): "
+        )
+        if genre:
+            albums = list(filter(lambda item: item[2] == genre), albums)
+
+        return albums
+
+
+def show_albums(albums):
+    if albums:
+        for i in range(len(albums)):
+            if albums[i][4]:
+                listend = "listend"
+            else:
+                listend = "not listend yet"
+            print(
+                f"no: {i}, title: {albums[i][0]}, artist: {albums[i][1]}, genre: {albums[i][2]}, release: {albums[i][3]}, {listend}"
+            )
+        else:
+            print("no albums available!!!!")
 
 
 def select_album(albums):
@@ -59,7 +111,9 @@ while True:
         c.execute("SELECT * FROM albums")
         albums = c.fetchall()
         show_albums(albums)
-        print(select_album(albums))
+        show_albums(filter_albums(albums))
+        if albums:
+            print(select_album((albums)))
     elif inp == "listend to":
         pass
     elif inp == "add album":
@@ -77,7 +131,7 @@ while True:
             genre = input("add the genre of the album: ")
             while True:
                 try:
-                    release = int(input("enter the realease date of the album: "))
+                    release = int(input("enter the release date of the album: "))
                     break
                 except ValueError:
                     print("you should enter a number!!!!")
