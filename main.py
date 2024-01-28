@@ -1,8 +1,20 @@
 from module import dbconnect
+from sqlite3 import OperationalError
+import logging
+from datetime import datetime
 
+currenttime = datetime.now()
+
+# Config log file
+logging.basicConfig(filename="log/logs.log", encoding='utf-8',level=logging.INFO)
+
+# Connect to database
 conn = dbconnect.get_connection() # This will always return the same object
+logging.info(f'{currenttime}: Connect to database successful.')
+quit
 c = conn.cursor()
 try:
+    # Create a table called 'albums' in databse
     c.execute(
         """CREATE TABLE albums (
                 title TEXT,
@@ -12,10 +24,12 @@ try:
                 listend BOOL
             )"""
     )
+    logging.info(f'{currenttime}: Table created into database.')
+    # Submit changes and modifie database
     conn.commit()
-except sqlite3.OperationalError:
-    pass
-
+except OperationalError:
+    logging.error(f'{currenttime}: An error occurred creating the table.')
+    
 
 def filter_albums(albums):
     def release_filter(release, start, end):
