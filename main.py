@@ -1,6 +1,6 @@
-import sqlite3
+from module import dbconnect
 
-conn = sqlite3.connect("albums.sqlite")
+conn = dbconnect.get_connection() # This will always return the same object
 c = conn.cursor()
 try:
     c.execute(
