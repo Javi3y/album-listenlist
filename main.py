@@ -1,21 +1,43 @@
-import sqlite3
+from module import dbconnect
+from sqlite3 import OperationalError
+import logging
+from datetime import datetime
 
-conn = sqlite3.connect("albums.sqlite")
+currenttime = datetime.now()
+
+# Config log file
+logging.basicConfig(filename="log/logs.log", encoding='utf-8',level=logging.INFO)
+
+# Connect to database
+conn = dbconnect.get_connection() # This will always return the same object
+logging.info(f"{currenttime}: Connect to database successful.")
+
 c = conn.cursor()
-try:
-    c.execute(
-        """CREATE TABLE albums (
-                title TEXT,
-                artist TEXT,
-                genre TEXT,
-                release INTEGER,
-                listend BOOL
-            )"""
-    )
-    conn.commit()
-except sqlite3.OperationalError:
-    pass
 
+# Check table does exist or not
+tablexist = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='albums';")
+
+try:
+    if tablexist == 0:
+        # Create a table called 'albums' in databse
+        c.execute(
+            """CREATE TABLE albums (
+                    title TEXT,
+                    artist TEXT,
+                    genre TEXT,
+                    release INTEGER,
+                    listend BOOL
+                )"""
+        )
+        logging.info(f"{currenttime}: Table created into database.")
+        # Submit changes and modifie database
+        conn.commit()
+    else:
+        logging.warning(f"{currenttime}: Table does exist.")
+except OperationalError:
+    logging.error(f"{currenttime}: {OperationalError}.")
+    pass
+    
 
 def filter_albums(albums):
     def release_filter(release, start, end):

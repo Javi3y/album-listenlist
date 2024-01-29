@@ -1,2 +1,4 @@
-albums.sqlite
+module/__pycache__/
+log/
+albums.db
 .vscode
