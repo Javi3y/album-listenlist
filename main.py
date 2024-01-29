@@ -13,20 +13,27 @@ conn = dbconnect.get_connection() # This will always return the same object
 logging.info(f"{currenttime}: Connect to database successful.")
 
 c = conn.cursor()
+
+# Check table does exist or not
+tablexist = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='albums';")
+
 try:
-    # Create a table called 'albums' in databse
-    c.execute(
-        """CREATE TABLE albums (
-                title TEXT,
-                artist TEXT,
-                genre TEXT,
-                release INTEGER,
-                listend BOOL
-            )"""
-    )
-    logging.info(f"{currenttime}: Table created into database.")
-    # Submit changes and modifie database
-    conn.commit()
+    if tablexist == 0:
+        # Create a table called 'albums' in databse
+        c.execute(
+            """CREATE TABLE albums (
+                    title TEXT,
+                    artist TEXT,
+                    genre TEXT,
+                    release INTEGER,
+                    listend BOOL
+                )"""
+        )
+        logging.info(f"{currenttime}: Table created into database.")
+        # Submit changes and modifie database
+        conn.commit()
+    else:
+        logging.warning(f"{currenttime}: Table does exist.")
 except OperationalError:
     logging.error(f"{currenttime}: {OperationalError}.")
     pass
