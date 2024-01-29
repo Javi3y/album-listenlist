@@ -1,4 +1,4 @@
 module/__pycache__/
 log/
-albums.sqlite
+albums.db
 .vscode

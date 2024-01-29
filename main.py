@@ -10,8 +10,8 @@ logging.basicConfig(filename="log/logs.log", encoding='utf-8',level=logging.INFO
 
 # Connect to database
 conn = dbconnect.get_connection() # This will always return the same object
-logging.info(f'{currenttime}: Connect to database successful.')
-quit
+logging.info(f"{currenttime}: Connect to database successful.")
+
 c = conn.cursor()
 try:
     # Create a table called 'albums' in databse
@@ -24,11 +24,12 @@ try:
                 listend BOOL
             )"""
     )
-    logging.info(f'{currenttime}: Table created into database.')
+    logging.info(f"{currenttime}: Table created into database.")
     # Submit changes and modifie database
     conn.commit()
 except OperationalError:
-    logging.error(f'{currenttime}: An error occurred creating the table.')
+    logging.error(f"{currenttime}: {OperationalError}.")
+    pass
     
 
 def filter_albums(albums):
